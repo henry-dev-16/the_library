@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: php_web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      - db
+
+  db:
+    image: mysql:5.7
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: dblibreria
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: adminpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      # Esto lee tu SQL y lo importa automáticamente al iniciar por primera vez
+      - ./db:/docker-entrypoint-initdb.d
+      # Volumen persistente para que no se borren los datos si apagas el contenedor
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
